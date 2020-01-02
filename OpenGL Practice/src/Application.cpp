@@ -2,6 +2,9 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
@@ -43,6 +46,19 @@ static int CreateShader(const std::string& vertexShaderSrc, const std::string& f
     return program;
 }
 
+static std::string ReadFile(const std::string& filePath)
+{
+    std::ifstream stream(filePath);
+    std::stringstream ss;
+
+    std::string line;
+    while (getline(stream, line))
+    {
+        ss << line << '\n';
+    }
+    return ss.str();
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -79,25 +95,11 @@ int main(void)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glEnableVertexAttribArray(0);
 
-    std::string vertexShaderSrc =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec4 position;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "  gl_Position = position;\n"
-        "}\n";
+    std::ifstream stream();
 
-    std::string fragmentShaderSrc =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) out vec4 color;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "  color = vec4(0.3, 0.3, 0.8, 1.0);\n"
-        "}\n";
+    std::string vertexShaderSrc = ReadFile("res/shaders/Basic.vert");
+
+    std::string fragmentShaderSrc = ReadFile("res/shaders/Basic.frag");
 
     unsigned int shaderProgramId = CreateShader(vertexShaderSrc, fragmentShaderSrc);
     glUseProgram(shaderProgramId);
