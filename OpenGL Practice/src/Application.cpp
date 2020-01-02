@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <assert.h>
 
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
@@ -77,6 +78,7 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     if(glewInit() != GLEW_OK)
         std::cout <<"GLEW Error" << std::endl;
@@ -114,8 +116,12 @@ int main(void)
 
     unsigned int shaderProgramId = CreateShader(vertexShaderSrc, fragmentShaderSrc);
     glUseProgram(shaderProgramId);
+    int uniformLocationColor = glGetUniformLocation(shaderProgramId, "u_Color");
+    assert(uniformLocationColor != -1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    float r = 0.0f;
+    float increment = 0.05f;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -123,6 +129,13 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        if (r > 1.0f)
+            increment = -0.05f;
+        else if (r < 0.0f)
+            increment = 0.05f;
+        r += increment;
+
+        glUniform4f(uniformLocationColor, r, 0.3f, 0.8f, 1.0f);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
